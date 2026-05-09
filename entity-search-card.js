@@ -88,7 +88,6 @@ customElements.whenDefined("card-tools").then(() => {
               label="${this.search_text}"
             >
               <ha-icon icon="mdi:magnify" id="searchIcon" slot="leadingIcon"></ha-icon>
-
               <ha-icon-button
                 slot="trailingIcon"
                 @click="${this._clearInput}"
@@ -102,23 +101,13 @@ customElements.whenDefined("card-tools").then(() => {
 
           ${
             results.length > 0
-              ? ct.LitHtml`
-                  <div id="count">
-                    Showing ${results.length} of ${this._results.length} results
-                  </div>
-                `
+              ? ct.LitHtml`<div id="count">Showing ${results.length} of ${this._results.length} results</div>`
               : ""
           }
         </div>
-
         ${
           rows.length > 0 || actions.length > 0
-            ? ct.LitHtml`
-                <div id="results">
-                  ${actions}
-                  ${rows}
-                </div>
-              `
+            ? ct.LitHtml`<div id="results">${actions}${rows}</div>`
             : ""
         }
       </ha-card>
@@ -127,17 +116,13 @@ customElements.whenDefined("card-tools").then(() => {
 
     _createResultRow(entity_id) {
       var row = ct.createEntityRow({ entity: entity_id });
-
       row.addEventListener("click", () => ct.moreInfo(entity_id));
-
       row.hass = this.hass;
-
       return row;
     }
 
     _createActionRow(action, matches) {
       var service_data = action.service_data;
-
       for (var key in service_data) {
         service_data[key] = matchAndReplace(service_data[key], matches);
       }
@@ -149,9 +134,7 @@ customElements.whenDefined("card-tools").then(() => {
         service: action.service,
         service_data: service_data,
       });
-
       elem.hass = this.hass;
-
       return elem;
     }
 
@@ -168,13 +151,11 @@ customElements.whenDefined("card-tools").then(() => {
 
     _debounce(func, wait) {
       let timeout;
-
       return function executedFunction(...args) {
         const later = () => {
           clearTimeout(timeout);
           func(...args);
         };
-
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
       };
@@ -220,110 +201,64 @@ customElements.whenDefined("card-tools").then(() => {
       for (const action of this.actions) {
         if (this._serviceExists(action.service)) {
           var matches = searchText.match(action.matches);
-
           if (matches != null) {
             active.push([action, matches]);
           }
         }
       }
-
       return active;
     }
 
     _serviceExists(serviceCall) {
       var [domain, service] = serviceCall.split(".");
       var servicesForDomain = this.hass.services[domain];
-
       return servicesForDomain && service in servicesForDomain;
     }
 
     static get styles() {
       return ct.LitCSS`
-        ha-card {
-          background: rgba(28, 39, 49, 0.92);
-          border-radius: 16px;
-          box-shadow: 0 4px 14px rgba(0,0,0,0.18);
-          border: none;
-          overflow: hidden;
-        }
+      ha-card {
+        background: rgba(28, 39, 49, 0.92);
+        border-radius: 16px;
+        box-shadow: none;
+        border: none;
+        overflow: hidden;
+      }
 
-        #searchContainer {
-          width: calc(100% - 24px);
-          display: block;
-          margin-left: auto;
-          margin-right: auto;
-          padding-top: 12px;
-        }
+      #searchContainer {
+        width: calc(100% - 24px);
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 12px;
+      }
 
-        #searchTextFieldContainer {
-          display: flex;
-          padding-bottom: 10px;
-        }
+      #searchTextFieldContainer {
+        display: flex;
+        padding-bottom: 8px;
+      }
 
-        #searchText {
-          flex-grow: 1;
+      #searchText {
+        flex-grow: 1;
+      }
 
-          --mdc-theme-primary: #00d1b2;
+      #count {
+        text-align: right;
+        font-style: italic;
+        font-size: 12px;
+        color: var(--secondary-text-color);
+        padding-bottom: 6px;
+      }
 
-          --ha-input-fill-color: rgba(18, 28, 36, 0.92);
-          --ha-input-border-radius: 18px;
-
-          --mdc-text-field-fill-color: rgba(18, 28, 36, 0.92);
-          --mdc-shape-small: 18px;
-
-          --mdc-text-field-idle-line-color: rgba(255,255,255,0.08);
-          --mdc-text-field-hover-line-color: rgba(255,255,255,0.18);
-          --mdc-text-field-focused-line-color: #00d1b2;
-
-          --mdc-text-field-label-ink-color: rgba(255,255,255,0.55);
-          --mdc-text-field-input-text-color: #ffffff;
-
-          --text-field-border-radius: 18px;
-        }
-
-        #searchIcon {
-          color: rgba(255,255,255,0.55);
-        }
-
-        #count {
-          text-align: right;
-          font-style: italic;
-          font-size: 12px;
-          color: rgba(255,255,255,0.45);
-          padding-bottom: 6px;
-        }
-
-        #results {
-          width: 100%;
-          display: block;
-          padding-bottom: 8px;
-          margin-top: 8px;
-        }
-
-        #results > * {
-          background: transparent !important;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-          padding-top: 10px;
-          padding-bottom: 10px;
-          transition: background 0.15s ease;
-        }
-
-        #results > *:hover {
-          background: rgba(255,255,255,0.03) !important;
-        }
-
-        #results > *:last-child {
-          border-bottom: none;
-        }
-
-        state-badge {
-          margin-left: 12px;
-        }
-
-        .secondary {
-          color: rgba(255,255,255,0.55) !important;
-        }
-      `;
+      #results {
+        width: 100%;
+        display: block;
+        padding-bottom: 8px;
+        margin-top: 8px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    `;
     }
   }
 
@@ -332,7 +267,6 @@ customElements.whenDefined("card-tools").then(() => {
 
 setTimeout(() => {
   if (customElements.get("card-tools")) return;
-
   customElements.define(
     "entity-search-card",
     class extends HTMLElement {
@@ -346,7 +280,6 @@ setTimeout(() => {
 }, 2000);
 
 window.customCards = window.customCards || [];
-
 window.customCards.push({
   type: "entity-search-card",
   name: "Entity Search Card",
