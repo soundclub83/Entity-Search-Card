@@ -99,14 +99,23 @@ customElements.whenDefined("card-tools").then(() => {
 
             ${
               results.length > 0
-                ? ct.LitHtml`<div id="count">Showing ${results.length} of ${this._results.length} results</div>`
+                ? ct.LitHtml`
+                    <div id="count">
+                      Showing ${results.length} of ${this._results.length} results
+                    </div>
+                  `
                 : ""
             }
           </div>
 
           ${
             rows.length > 0 || actions.length > 0
-              ? ct.LitHtml`<div id="results">${actions}${rows}</div>`
+              ? ct.LitHtml`
+                  <div id="results">
+                    ${actions}
+                    ${rows}
+                  </div>
+                `
               : ""
           }
         </ha-card>
@@ -122,6 +131,7 @@ customElements.whenDefined("card-tools").then(() => {
 
     _createActionRow(action, matches) {
       var service_data = action.service_data;
+
       for (var key in service_data) {
         service_data[key] = matchAndReplace(service_data[key], matches);
       }
@@ -133,6 +143,7 @@ customElements.whenDefined("card-tools").then(() => {
         service: action.service,
         service_data: service_data,
       });
+
       elem.hass = this.hass;
       return elem;
     }
@@ -150,11 +161,13 @@ customElements.whenDefined("card-tools").then(() => {
 
     _debounce(func, wait) {
       let timeout;
+
       return function executedFunction(...args) {
         const later = () => {
           clearTimeout(timeout);
           func(...args);
         };
+
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
       };
@@ -200,36 +213,35 @@ customElements.whenDefined("card-tools").then(() => {
       for (const action of this.actions) {
         if (this._serviceExists(action.service)) {
           var matches = searchText.match(action.matches);
+
           if (matches != null) {
             active.push([action, matches]);
           }
         }
       }
+
       return active;
     }
 
     _serviceExists(serviceCall) {
       var [domain, service] = serviceCall.split(".");
       var servicesForDomain = this.hass.services[domain];
+
       return servicesForDomain && service in servicesForDomain;
     }
 
     static get styles() {
       return ct.LitCSS`
         ha-card {
-          background: rgba(28, 39, 49, 0.92);
-          border-radius: 16px;
+          background: transparent;
+          border-radius: 0;
           box-shadow: none;
           border: none;
-          overflow: hidden;
         }
 
         #searchContainer {
-          width: calc(100% - 24px);
+          width: 100%;
           display: block;
-          margin-left: auto;
-          margin-right: auto;
-          padding-top: 12px;
         }
 
         #searchTextFieldContainer {
@@ -238,36 +250,36 @@ customElements.whenDefined("card-tools").then(() => {
           align-items: center;
           box-sizing: border-box;
           width: 100%;
-          min-height: 48px;
-          padding: 0 6px 0 12px;
-          border-radius: 14px;
-          border: 1px solid var(--divider-color);
-          background: rgba(18, 28, 36, 0.92);
+          min-height: 56px;
+          padding: 0 10px 0 14px;
+          border-radius: 18px;
+          background: rgba(28, 39, 49, 0.92);
+          border: 1px solid rgba(255,255,255,0.06);
         }
 
         #searchIcon {
-          color: var(--secondary-text-color);
-          opacity: 0.8;
+          color: rgba(255,255,255,0.65);
         }
 
         #searchText {
           width: 100%;
-          height: 46px;
+          height: 56px;
           border: none;
           outline: none;
           background: transparent;
           color: var(--primary-text-color);
-          font-size: 16px;
+          font-size: 18px;
+          font-family: inherit;
           box-sizing: border-box;
+          padding-left: 8px;
         }
 
         #searchText::placeholder {
-          color: var(--secondary-text-color);
-          opacity: 0.8;
+          color: rgba(255,255,255,0.45);
         }
 
         #clearButton {
-          color: var(--secondary-text-color);
+          color: rgba(255,255,255,0.65);
         }
 
         #count {
@@ -282,10 +294,7 @@ customElements.whenDefined("card-tools").then(() => {
         #results {
           width: 100%;
           display: block;
-          padding-bottom: 8px;
-          margin-top: 8px;
-          margin-left: auto;
-          margin-right: auto;
+          margin-top: 12px;
         }
       `;
     }
@@ -296,6 +305,7 @@ customElements.whenDefined("card-tools").then(() => {
 
 setTimeout(() => {
   if (customElements.get("card-tools")) return;
+
   customElements.define(
     "entity-search-card",
     class extends HTMLElement {
@@ -309,6 +319,7 @@ setTimeout(() => {
 }, 2000);
 
 window.customCards = window.customCards || [];
+
 window.customCards.push({
   type: "entity-search-card",
   name: "Entity Search Card",
