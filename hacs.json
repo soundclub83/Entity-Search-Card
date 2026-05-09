@@ -1,5 +1,6 @@
 {
   "name": "entity-search-card",
+  "filename": "entity-search-card.js",
   "render_readme": true,
   "homeassistant": "2026.5"
 }
