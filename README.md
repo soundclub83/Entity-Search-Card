@@ -6,32 +6,6 @@ Originally based on the excellent `search-card` project by Pierre Ståhl, this v
 
 ---
 
-## Features
-
-- Fast entity search
-- Works with modern Home Assistant versions
-- No outdated frontend dependencies
-- Lightweight and simple
-- Automatic language detection (German / English)
-- Clean integrated dashboard design
-- Supports excluded domains
-- Configurable result limit
-- Mobile friendly layout
-
----
-
-## Screenshots
-
-### Compact Mode
-
-![Compact Mode](images/screenshot-1.png)
-
-### Search Results
-
-![Search Results](images/screenshot-2.png)
-
----
-
 ## Installation
 
 ### HACS (Custom Repository)
