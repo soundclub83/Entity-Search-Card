@@ -73,56 +73,44 @@ customElements.whenDefined("card-tools").then(() => {
       );
 
       return ct.LitHtml`
-      <ha-card>
-        <div id="searchContainer">
-          <div id="searchTextFieldContainer">
-            <ha-input
-              id="searchText"
-              .value="${this._searchValue}"
-              @input="${this._valueChanged}"
-              no-label-float
-              type="text"
-              autocomplete="off"
-              icon
-              iconTrailing
-              label="${this.search_text}"
-            >
-              <ha-icon icon="mdi:magnify" id="searchIcon" slot="leadingIcon"></ha-icon>
+        <ha-card>
+          <div id="searchContainer">
+            <div id="searchTextFieldContainer">
+              <ha-icon icon="mdi:magnify" id="searchIcon"></ha-icon>
+
+              <input
+                id="searchText"
+                .value="${this._searchValue}"
+                @input="${this._valueChanged}"
+                type="text"
+                autocomplete="off"
+                placeholder="${this.search_text}"
+              >
 
               <ha-icon-button
-                slot="trailingIcon"
+                id="clearButton"
                 @click="${this._clearInput}"
                 alt="Clear"
                 title="Clear"
               >
                 <ha-icon icon="mdi:close"></ha-icon>
               </ha-icon-button>
-            </ha-input>
+            </div>
+
+            ${
+              results.length > 0
+                ? ct.LitHtml`<div id="count">Showing ${results.length} of ${this._results.length} results</div>`
+                : ""
+            }
           </div>
 
           ${
-            results.length > 0
-              ? ct.LitHtml`
-                  <div id="count">
-                    Showing ${results.length} of ${this._results.length} results
-                  </div>
-                `
+            rows.length > 0 || actions.length > 0
+              ? ct.LitHtml`<div id="results">${actions}${rows}</div>`
               : ""
           }
-        </div>
-
-        ${
-          rows.length > 0 || actions.length > 0
-            ? ct.LitHtml`
-                <div id="results">
-                  ${actions}
-                  ${rows}
-                </div>
-              `
-            : ""
-        }
-      </ha-card>
-    `;
+        </ha-card>
+      `;
     }
 
     _createResultRow(entity_id) {
@@ -134,7 +122,6 @@ customElements.whenDefined("card-tools").then(() => {
 
     _createActionRow(action, matches) {
       var service_data = action.service_data;
-
       for (var key in service_data) {
         service_data[key] = matchAndReplace(service_data[key], matches);
       }
@@ -146,7 +133,6 @@ customElements.whenDefined("card-tools").then(() => {
         service: action.service,
         service_data: service_data,
       });
-
       elem.hass = this.hass;
       return elem;
     }
@@ -164,13 +150,11 @@ customElements.whenDefined("card-tools").then(() => {
 
     _debounce(func, wait) {
       let timeout;
-
       return function executedFunction(...args) {
         const later = () => {
           clearTimeout(timeout);
           func(...args);
         };
-
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
       };
@@ -216,20 +200,17 @@ customElements.whenDefined("card-tools").then(() => {
       for (const action of this.actions) {
         if (this._serviceExists(action.service)) {
           var matches = searchText.match(action.matches);
-
           if (matches != null) {
             active.push([action, matches]);
           }
         }
       }
-
       return active;
     }
 
     _serviceExists(serviceCall) {
       var [domain, service] = serviceCall.split(".");
       var servicesForDomain = this.hass.services[domain];
-
       return servicesForDomain && service in servicesForDomain;
     }
 
@@ -252,26 +233,41 @@ customElements.whenDefined("card-tools").then(() => {
         }
 
         #searchTextFieldContainer {
-          display: flex;
-          padding-bottom: 8px;
+          display: grid;
+          grid-template-columns: 28px 1fr 36px;
+          align-items: center;
+          box-sizing: border-box;
+          width: 100%;
+          min-height: 48px;
+          padding: 0 6px 0 12px;
+          border-radius: 14px;
+          border: 1px solid var(--divider-color);
+          background: rgba(18, 28, 36, 0.92);
+        }
+
+        #searchIcon {
+          color: var(--secondary-text-color);
+          opacity: 0.8;
         }
 
         #searchText {
-          flex-grow: 1;
+          width: 100%;
+          height: 46px;
+          border: none;
+          outline: none;
+          background: transparent;
+          color: var(--primary-text-color);
+          font-size: 16px;
+          box-sizing: border-box;
+        }
 
-          --mdc-text-field-fill-color: rgba(18, 28, 36, 0.92);
+        #searchText::placeholder {
+          color: var(--secondary-text-color);
+          opacity: 0.8;
+        }
 
-          --mdc-text-field-idle-line-color: transparent;
-          --mdc-text-field-hover-line-color: transparent;
-          --mdc-text-field-focused-line-color: transparent;
-
-          --mdc-text-field-outline-color: rgba(255,255,255,0.10);
-          --mdc-text-field-hover-outline-color: rgba(255,255,255,0.18);
-          --mdc-text-field-focused-outline-color: rgba(255,255,255,0.22);
-
-          --mdc-theme-primary: var(--primary-color);
-
-          --mdc-shape-small: 12px;
+        #clearButton {
+          color: var(--secondary-text-color);
         }
 
         #count {
@@ -279,6 +275,7 @@ customElements.whenDefined("card-tools").then(() => {
           font-style: italic;
           font-size: 12px;
           color: var(--secondary-text-color);
+          padding-top: 6px;
           padding-bottom: 6px;
         }
 
@@ -299,7 +296,6 @@ customElements.whenDefined("card-tools").then(() => {
 
 setTimeout(() => {
   if (customElements.get("card-tools")) return;
-
   customElements.define(
     "entity-search-card",
     class extends HTMLElement {
@@ -313,7 +309,6 @@ setTimeout(() => {
 }, 2000);
 
 window.customCards = window.customCards || [];
-
 window.customCards.push({
   type: "entity-search-card",
   name: "Entity Search Card",
