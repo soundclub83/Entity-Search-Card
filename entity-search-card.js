@@ -73,53 +73,60 @@ customElements.whenDefined("card-tools").then(() => {
       );
 
       return ct.LitHtml`
-        <ha-card>
-          <div id="searchContainer">
-            <div id="searchTextFieldContainer">
-              <ha-icon icon="mdi:magnify" id="searchIcon"></ha-icon>
-
-              <input
-                id="searchText"
-                .value="${this._searchValue}"
-                @input="${this._valueChanged}"
-                type="text"
-                autocomplete="off"
-                placeholder="${this.search_text}"
-              >
+      <ha-card class="${results.length > 0 ? "expanded" : ""}">
+        <div id="searchContainer">
+          <div id="searchTextFieldContainer">
+            <ha-input
+              id="searchText"
+              .value="${this._searchValue}"
+              @input="${this._valueChanged}"
+              no-label-float
+              type="text"
+              autocomplete="off"
+              icon
+              iconTrailing
+              label="${this.search_text}"
+            >
+              <ha-icon
+                icon="mdi:magnify"
+                id="searchIcon"
+                slot="leadingIcon"
+              ></ha-icon>
 
               <ha-icon-button
-                id="clearButton"
+                slot="trailingIcon"
                 @click="${this._clearInput}"
                 alt="Clear"
                 title="Clear"
               >
                 <ha-icon icon="mdi:close"></ha-icon>
               </ha-icon-button>
-            </div>
-
-            ${
-              results.length > 0
-                ? ct.LitHtml`
-                    <div id="count">
-                      Showing ${results.length} of ${this._results.length} results
-                    </div>
-                  `
-                : ""
-            }
+            </ha-input>
           </div>
 
           ${
-            rows.length > 0 || actions.length > 0
+            results.length > 0
               ? ct.LitHtml`
-                  <div id="results">
-                    ${actions}
-                    ${rows}
+                  <div id="count">
+                    Showing ${results.length} of ${this._results.length} results
                   </div>
                 `
               : ""
           }
-        </ha-card>
-      `;
+        </div>
+
+        ${
+          rows.length > 0 || actions.length > 0
+            ? ct.LitHtml`
+                <div id="results">
+                  ${actions}
+                  ${rows}
+                </div>
+              `
+            : ""
+        }
+      </ha-card>
+    `;
     }
 
     _createResultRow(entity_id) {
@@ -187,9 +194,9 @@ customElements.whenDefined("card-tools").then(() => {
         for (const entity_id in this.hass.states) {
           if (
             (entity_id.search(searchRegex) >= 0 ||
-              this.hass.states[entity_id].attributes.friendly_name?.search(
-                searchRegex
-              ) >= 0) &&
+              this.hass.states[
+                entity_id
+              ].attributes.friendly_name?.search(searchRegex) >= 0) &&
             (this.included_domains
               ? this.included_domains.includes(entity_id.split(".")[0])
               : !this.excluded_domains.includes(entity_id.split(".")[0]))
@@ -233,10 +240,16 @@ customElements.whenDefined("card-tools").then(() => {
     static get styles() {
       return ct.LitCSS`
         ha-card {
-          background: transparent;
-          border-radius: 0;
-          box-shadow: none;
-          border: none;
+          background: rgba(28, 39, 49, 0.92);
+          border-radius: 28px;
+          padding: 18px;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+          overflow: hidden;
+          transition: all 0.2s ease;
+        }
+
+        ha-card.expanded {
+          padding-bottom: 10px;
         }
 
         #searchContainer {
@@ -245,56 +258,49 @@ customElements.whenDefined("card-tools").then(() => {
         }
 
         #searchTextFieldContainer {
-          display: grid;
-          grid-template-columns: 28px 1fr 36px;
+          display: flex;
           align-items: center;
-          box-sizing: border-box;
-          width: 100%;
-          min-height: 56px;
-          padding: 0 10px 0 14px;
-          border-radius: 18px;
-          background: rgba(28, 39, 49, 0.92);
-          border: 1px solid rgba(255,255,255,0.06);
-        }
-
-        #searchIcon {
-          color: rgba(255,255,255,0.65);
         }
 
         #searchText {
-          width: 100%;
-          height: 56px;
-          border: none;
-          outline: none;
-          background: transparent;
-          color: var(--primary-text-color);
-          font-size: 18px;
-          font-family: inherit;
-          box-sizing: border-box;
-          padding-left: 8px;
-        }
+          flex-grow: 1;
 
-        #searchText::placeholder {
-          color: rgba(255,255,255,0.45);
-        }
+          --ha-input-border-radius: 22px;
+          --ha-input-border-width: 0px;
 
-        #clearButton {
-          color: rgba(255,255,255,0.65);
+          --mdc-theme-primary: rgba(0, 255, 200, 0.9);
+
+          --text-field-fill-color: rgba(255, 255, 255, 0.04);
+
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 22px;
+          padding-left: 6px;
+          padding-right: 6px;
         }
 
         #count {
           text-align: right;
           font-style: italic;
           font-size: 12px;
-          color: var(--secondary-text-color);
-          padding-top: 6px;
-          padding-bottom: 6px;
+          opacity: 0.7;
+          margin-top: 8px;
+          margin-right: 6px;
         }
 
         #results {
-          width: 100%;
-          display: block;
-          margin-top: 12px;
+          margin-top: 14px;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
+          padding-top: 10px;
+        }
+
+        #results > * {
+          margin-bottom: 2px;
+          border-radius: 18px;
+          overflow: hidden;
+        }
+
+        #results > *:last-child {
+          margin-bottom: 0;
         }
       `;
     }
