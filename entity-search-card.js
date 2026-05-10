@@ -330,6 +330,20 @@ customElements.whenDefined("card-tools").then(() => {
           box-sizing: border-box;
         }
 
+        #results ha-slider {
+          max-width: calc(100% - 12px);
+        }
+
+        #results hui-generic-entity-row {
+          overflow: hidden;
+        }
+
+        #results .text-content {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
         #results > *:last-child {
           border-bottom: none;
         }
