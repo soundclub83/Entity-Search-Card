@@ -311,16 +311,23 @@ customElements.whenDefined("card-tools").then(() => {
           width: 100%;
           display: block;
           margin: 0;
-          padding: 0 0 6px 0;
+          padding: 0 6px 6px 6px;
           background: rgba(28, 39, 49, 0.92);
+          box-sizing: border-box;
         }
 
         #results > * {
           min-height: 42px;
           border-bottom: 1px solid rgba(255,255,255,0.06);
-          padding-left: 2px;
-          padding-right: 2px;
-          box-sizing: border-box;          
+          box-sizing: border-box;
+        }
+
+        #results hui-generic-entity-row,
+        #results state-card-content,
+        #results div.entity {
+          padding-left: 4px !important;
+          padding-right: 4px !important;
+          box-sizing: border-box;
         }
 
         #results > *:last-child {
