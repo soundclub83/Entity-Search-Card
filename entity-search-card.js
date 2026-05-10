@@ -313,14 +313,14 @@ customElements.whenDefined("card-tools").then(() => {
           margin: 0;
           padding: 0 0 6px 0;
           background: rgba(28, 39, 49, 0.92);
-          padding-left: 2px;
-          padding-right: 2px;
-          box-sizing: border-box;
         }
 
         #results > * {
           min-height: 42px;
           border-bottom: 1px solid rgba(255,255,255,0.06);
+          padding-left: 2px;
+          padding-right: 2px;
+          box-sizing: border-box;          
         }
 
         #results > *:last-child {
